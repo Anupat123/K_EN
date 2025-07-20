@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>แดชบอร์ด - Order App</title>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Prompt', sans-serif;
+            background-color: #fffbea;
+            padding: 0;
+            margin: 0;
+            color: #333;
+        }
+
+        header {
+            background-color: #fff6cc;
+            padding: 40px 20px 30px;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+        }
+
+        header h1 {
+            font-size: 36px;
+            color: #d99e00;
+            margin: 0;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 40px;
+            padding: 40px 20px 20px;
+        }
+
+        .box {
+            background-color: #fff;
+            border: 1px solid #f1d98d;
+            padding: 25px 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            flex: 1 1 280px;
+            max-width: 400px;
+        }
+
+        .box h2 {
+            font-size: 20px;
+            color: #b07b00;
+            margin-bottom: 10px;
+        }
+
+        .box p {
+            font-size: 28px;
+            font-weight: bold;
+            color: #444;
+        }
+
+        .btn {
+            background-color: #f5c842;
+            color: #fff;
+            padding: 12px 24px;
+            border: none;
+            font-size: 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn:hover {
+            background-color: #e6b800;
+        }
+
+        table {
+            width: 90%;
+            max-width: 1200px;
+            margin: 40px auto;
+            border-collapse: collapse;
+            background-color: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+        }
+
+        th, td {
+            padding: 16px 18px;
+            border-bottom: 1px solid #f2f2f2;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            background-color: #fff7d0;
+            color: #b07b00;
+            font-weight: 600;
+        }
+
+        button {
+            background-color: #ff5c5c;
+            border: none;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #e04c4c;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>🍿 ORDER ข้าวโพดและน้ำ</h1>
+</header>
+
+<div class="container">
+    <div class="box">
+        <h2>จำนวนออเดอร์</h2>
+        <p>{{ total_orders }}</p>
+        <h2>รายได้รวม</h2>
+        <p>{{ total_revenue }} บาท</p>
+    </div>
+
+    <div class="box text-center">
+        <h2>สั่งออเดอร์ใหม่</h2>
+        <form action="{{ url_for('order') }}" method="get" style="margin-top: 20px;">
+            <button class="btn" type="submit">+ สั่งออเดอร์</button>
+        </form>
+    </div>
+</div>
+
+<!-- ตารางออเดอร์ปกติ -->
+<table>
+    <thead>
+        <tr>
+            <th>รหัส</th>
+            <th>รายการ</th>
+            <th>ราคา</th>
+            <th>ช่องทางชำระเงิน</th>
+            <th>จัดการ</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for order in orders %}
+        <tr>
+            <td>{{ order.id }}</td>
+            <td>
+                ข้าวโพด: {{ order.corn_qty }} ถ้วย<br>
+                {% for drink_key, qty in order.drinks.items() %}
+                    {% if qty > 0 %}
+                        {{ drink_names[(drink_key[-1] | int) - 1] }}: {{ qty }} แก้ว<br>
+                    {% endif %}
+                {% endfor %}
+            </td>
+            <td>{{ order.total_price }} บาท</td>
+            <td>{{ order.payment_method if order.payment_method else 'ไม่ระบุ' }}</td>
+            <td>
+                <form action="{{ url_for('delete_order', order_id=order.id) }}" method="post" onsubmit="return askReason(this)">
+                    <input type="hidden" name="reason" value="">
+                    <button type="submit">ลบ</button>
+                </form>
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="5" class="text-center" style="padding: 20px;">ยังไม่มีรายการสั่งซื้อ</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- ตารางรายการที่ถูกลบ -->
+<h2 style="text-align: center; margin-top: 60px;">🗑 รายการที่ถูกลบ</h2>
+<table>
+    <thead>
+        <tr>
+            <th>รหัส</th>
+            <th>รายละเอียด</th>
+            <th>ราคา</th>
+            <th>เหตุผลที่ลบ</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for order in deleted_orders %}
+        <tr>
+            <td>{{ order.id }}</td>
+            <td>
+                ข้าวโพด: {{ order.corn_qty }} ถ้วย<br>
+                {% for drink_key, qty in order.drinks.items() %}
+                    {% if qty > 0 %}
+                        {{ drink_names[(drink_key[-1] | int) - 1] }}: {{ qty }} แก้ว<br>
+                    {% endif %}
+                {% endfor %}
+            </td>
+            <td>{{ order.total_price }} บาท</td>
+            <td>{{ order.delete_reason or 'ไม่ระบุ' }}</td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="4" class="text-center" style="padding: 20px;">ยังไม่มีรายการที่ถูกลบ</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<script>
+function askReason(form) {
+    const reason = prompt("กรุณาใส่เหตุผลที่ต้องการลบรายการนี้:");
+    if (!reason) return false;
+    form.reason.value = reason;
+    return true;
+}
+</script>
+
+</body>
+</html>

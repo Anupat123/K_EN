@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>ออเดอร์</title>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Prompt', sans-serif;
+            background-color: #fffbea;
+            color: #333;
+            padding: 0;
+            margin: 0;
+            text-align: center;
+        }
+
+        header {
+            background-color: #fff6cc;
+            padding: 30px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 32px;
+            color: #d99e00;
+        }
+
+        form {
+            padding: 30px 20px;
+        }
+
+        h2 {
+            margin-top: 40px;
+            font-size: 24px;
+            color: #b07b00;
+        }
+
+        .qty-controls {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .qty-controls input {
+            width: 40px;
+            text-align: center;
+            font-size: 16px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+
+        .qty-controls button {
+            background-color: #f5c842;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            font-size: 18px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .qty-controls button:hover {
+            background-color: #e6b800;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .card {
+            background-color: white;
+            border: 1px solid #f1d98d;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+        }
+
+        .card img {
+            width: 100%;
+            height: 160px;
+            object-fit: contain;
+            background-color: #fffdf3;
+            border-radius: 10px;
+            padding: 8px;
+        }
+
+        .card p {
+            margin: 10px 0 0;
+            font-weight: 500;
+            color: #444;
+        }
+
+        .actions {
+            margin-top: 40px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .actions button {
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        .actions button:hover {
+            background-color: #449d48;
+        }
+
+        .actions a button {
+            background-color: #999;
+        }
+
+        .actions a button:hover {
+            background-color: #777;
+        }
+
+        @media (max-width: 600px) {
+            h1 { font-size: 24px; }
+            h2 { font-size: 20px; }
+        }
+    </style>
+
+    <script>
+        function update(id, delta) {
+            const input = document.getElementById(id);
+            let val = parseInt(input.value) + delta;
+            if (val < 0) val = 0;
+            input.value = val;
+        }
+    </script>
+</head>
+<body>
+
+    <header>
+        <h1>🍿 สั่งออเดอร์</h1>
+    </header>
+
+    <form method="post" action="/order">
+
+        <!-- ข้าวโพด -->
+        <h2>ข้าวโพด (29 บาท)</h2>
+        <div style="display: flex; flex-direction: column; align-items: center; margin-top: 10px;">
+            <img src="{{ url_for('static', filename='images/corn.png') }}" 
+                 alt="ข้าวโพด" 
+                 style="width: 160px; height: 160px; object-fit: contain; border-radius: 12px; background-color: #fffdf3; padding: 8px;">
+            <div class="qty-controls">
+                <button type="button" onclick="update('corn_qty', -1)">-</button>
+                <input type="text" id="corn_qty" name="corn_qty" value="0" readonly>
+                <button type="button" onclick="update('corn_qty', 1)">+</button>
+            </div>
+        </div>
+
+        <!-- น้ำ -->
+        <h2>เลือกน้ำ (20 บาท)</h2>
+        <div class="grid">
+            {% for i in range(1, drink_names|length + 1) %}
+            {% set name = drink_names[i - 1] %}
+            <div class="card">
+                <img src="{{ url_for('static', filename='images/drink' ~ i ~ '.png') }}" alt="{{ name }}">
+                <p>{{ name }}</p>
+                <div class="qty-controls">
+                    <button type="button" onclick="update('drink{{ i }}', -1)">-</button>
+                    <input type="text" id="drink{{ i }}" name="drink{{ i }}" value="0" readonly>
+                    <button type="button" onclick="update('drink{{ i }}', 1)">+</button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- ปุ่มยืนยัน -->
+        <div class="actions">
+            <a href="/"><button type="button">ย้อนกลับ</button></a>
+            <button type="submit">ยืนยันออเดอร์</button>
+        </div>
+    </form>
+
+</body>
+</html>

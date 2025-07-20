@@ -1,0 +1,137 @@
+{
+  "orders": [
+    {
+      "id": 2,
+      "corn_qty": 2,
+      "drinks": {
+        "drink1": 0,
+        "drink2": 0,
+        "drink3": 1,
+        "drink4": 1,
+        "drink5": 0,
+        "drink6": 0
+      },
+      "total_price": 98,
+      "payment_method": "cash"
+    },
+    {
+      "id": 3,
+      "corn_qty": 2,
+      "drinks": {
+        "drink1": 0,
+        "drink2": 0,
+        "drink3": 0,
+        "drink4": 0,
+        "drink5": 0,
+        "drink6": 0
+      },
+      "total_price": 58,
+      "payment_method": "cash"
+    },
+    {
+      "id": 4,
+      "corn_qty": 3,
+      "drinks": {
+        "drink1": 0,
+        "drink2": 0,
+        "drink3": 0,
+        "drink4": 0,
+        "drink5": 0,
+        "drink6": 0
+      },
+      "total_price": 87,
+      "payment_method": "cash"
+    },
+    {
+      "id": 5,
+      "corn_qty": 2,
+      "drinks": {
+        "drink1": 0,
+        "drink2": 0,
+        "drink3": 0,
+        "drink4": 0,
+        "drink5": 0,
+        "drink6": 0
+      },
+      "total_price": 58,
+      "payment_method": "cash"
+    }
+  ],
+  "deleted_orders": [
+    {
+      "id": 2,
+      "corn_qty": 7,
+      "drinks": {
+        "drink1": 1,
+        "drink2": 1,
+        "drink3": 1,
+        "drink4": 1,
+        "drink5": 0,
+        "drink6": 1
+      },
+      "total_price": 303,
+      "payment_method": "cash",
+      "delete_reason": "ลืม"
+    },
+    {
+      "id": 1,
+      "corn_qty": 2,
+      "drinks": {
+        "drink1": 0,
+        "drink2": 1,
+        "drink3": 0,
+        "drink4": 0,
+        "drink5": 0,
+        "drink6": 1
+      },
+      "total_price": 98,
+      "payment_method": "cash",
+      "delete_reason": "ฉันใส่ข้อมูลผิด"
+    },
+    {
+      "id": 2,
+      "corn_qty": 2,
+      "drinks": {
+        "drink1": 0,
+        "drink2": 1,
+        "drink3": 1,
+        "drink4": 0,
+        "drink5": 0,
+        "drink6": 1
+      },
+      "total_price": 118,
+      "payment_method": "cash",
+      "delete_reason": "ใส่ผิด"
+    },
+    {
+      "id": 3,
+      "corn_qty": 3,
+      "drinks": {
+        "drink1": 0,
+        "drink2": 0,
+        "drink3": 0,
+        "drink4": 1,
+        "drink5": 0,
+        "drink6": 0
+      },
+      "total_price": 107,
+      "payment_method": "cash",
+      "delete_reason": "ลืม"
+    },
+    {
+      "id": 1,
+      "corn_qty": 2,
+      "drinks": {
+        "drink1": 0,
+        "drink2": 2,
+        "drink3": 0,
+        "drink4": 2,
+        "drink5": 0,
+        "drink6": 0
+      },
+      "total_price": 138,
+      "payment_method": "cash",
+      "delete_reason": "กดรายการผิด"
+    }
+  ]
+}

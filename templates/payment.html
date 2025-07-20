@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>ชำระเงิน</title>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Prompt', sans-serif;
+            background-color: #fffbea;
+            color: #333;
+            padding: 0;
+            margin: 0;
+        }
+
+        h1 {
+            text-align: center;
+            padding: 30px 0 10px;
+            margin: 0;
+            background-color: #fff6cc;
+            color: #d99e00;
+            font-size: 32px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding: 30px 20px;
+            gap: 40px;
+        }
+
+        .summary, .qr-box, .total-box {
+            background-color: white;
+            flex: 1 1 300px;
+            max-width: 500px;
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            border: 1px solid #f1d98d;
+        }
+
+        .summary h2, .qr-box h2, .total-box h2 {
+            color: #b07b00;
+            margin-bottom: 10px;
+        }
+
+        .summary ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .summary li {
+            margin-bottom: 8px;
+        }
+
+        img {
+            width: 100%;
+            max-width: 280px;
+            height: auto;
+            object-fit: contain;
+            background-color: #fffdf3;
+            padding: 10px;
+            border-radius: 12px;
+        }
+
+        form {
+            padding: 0 20px 40px;
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        button {
+            background-color: #f5c842;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-size: 16px;
+            color: white;
+            cursor: pointer;
+            min-width: 140px;
+        }
+
+        button:hover {
+            background-color: #e6b800;
+        }
+
+        .btn-group a button {
+            background-color: #999;
+        }
+
+        .btn-group a button:hover {
+            background-color: #777;
+        }
+
+        /* เน้นกล่องรวมทั้งหมด */
+        .total-box {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 28px;
+            font-weight: bold;
+            color: #d99e00;
+            box-shadow: 0 0 15px #d99e00aa;
+        }
+
+        @media (max-width: 600px) {
+            h1 { font-size: 24px; }
+            button { font-size: 14px; padding: 10px 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>🧾 รายการคำสั่งซื้อ</h1>
+
+    <div class="container">
+
+        <!-- สรุปรายการ -->
+        <div class="summary">
+            {% if corn_qty > 0 %}
+            <h2>ข้าวโพด</h2>
+            <p>{{ corn_qty }} ถ้วย x 29 = <strong>{{ corn_qty * 29 }}</strong> บาท</p>
+            {% endif %}
+
+            {% set any_drink = drinks | selectattr('qty', 'gt', 0) | list | length > 0 %}
+            {% if any_drink %}
+            <h2>น้ำ</h2>
+            <ul>
+                {% for drink in drinks %}
+                    {% if drink.qty > 0 %}
+                    <li>{{ drink.name }}: {{ drink.qty }} แก้ว x 20 = <strong>{{ drink.price }}</strong> บาท</li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+            {% endif %}
+        </div>
+
+        <!-- QR Code -->
+        <div class="qr-box" style="text-align: center;">
+            <h2>📲 สแกนเพื่อชำระเงิน</h2>
+            <img src="{{ url_for('static', filename='images/qr.jpg') }}" alt="QR Code">
+
+            <!-- รวมทั้งหมด -->
+            <div class="total-box">
+                รวมทั้งหมด: {{ total_price }} บาท
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ปุ่ม -->
+    <form method="post" action="/confirm">
+        <input type="hidden" name="corn_qty" value="{{ corn_qty }}">
+        <input type="hidden" name="total_price" value="{{ total_price }}">
+        
+        {% for i in range(1,7) %}
+            <input type="hidden" name="drink{{ i }}" value="{{ drinks_qty['drink' ~ i] }}">
+        {% endfor %}
+
+        <div class="btn-group">
+            <a href="/order"><button type="button">⬅️ ย้อนกลับ</button></a>
+            <button type="submit" name="payment_method" value="qr">✅ เสร็จสิ้น</button>
+            <button type="submit" name="payment_method" value="cash">💵 จ่ายเงินสด</button>
+        </div>
+    </form>
+
+</body>
+</html>
