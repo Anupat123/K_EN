@@ -23,15 +23,24 @@ def get_sheet():
         "https://spreadsheets.google.com/feeds",
         "https://www.googleapis.com/auth/drive"
     ]
+    
     creds_json = os.environ.get("GOOGLE_CREDENTIALS")
     if not creds_json:
         raise Exception("Environment variable GOOGLE_CREDENTIALS not found.")
-    
-    creds_dict = json.loads(creds_json)
-    creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
-    client = gspread.authorize(creds)
-    sheet = client.open_by_key(SHEET_ID).sheet1
-    return sheet
+
+    try:
+        creds_dict = json.loads(creds_json)
+
+        # แก้ไข private_key ที่มักจะถูก escape "\n" ให้กลับเป็นจริง
+        if "private_key" in creds_dict:
+            creds_dict["private_key"] = creds_dict["private_key"].replace("\\n", "\n")
+
+        creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
+        client = gspread.authorize(creds)
+        sheet = client.open_by_key(SHEET_ID).sheet1
+        return sheet
+    except Exception as e:
+        raise Exception(f"Failed to connect to Google Sheet: {e}")
 
 def append_to_sheet(order):
     sheet = get_sheet()
